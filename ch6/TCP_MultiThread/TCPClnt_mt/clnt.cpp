@@ -1,6 +1,6 @@
 // 순서 중요: WinSock2를 windows.h보다 먼저 포함
 #include <WinSock2.h>
-#include <ws2tcpip.h>
+#include <WS2tcpip.h>
 #include <windows.h>
 #include <iostream>
 #include <string>
@@ -38,12 +38,14 @@ static string extractFilename(const string& path)
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
-        cerr << "Usage: TCPaviClnt <filename>\n";
+        cerr << "Usage: TCPaviClnt <IP> <filename>\n";
         return 1;
     }
-    const char* filePath = argv[1];
+
+    const char* serverIP = argv[1];
+    const char* filePath = argv[2];
 
     // 파일 이름 추출
     string filename = extractFilename(filePath);
@@ -88,8 +90,8 @@ int main(int argc, char* argv[])
     // 서버 연결
     sockaddr_in servAddr = {};
     servAddr.sin_family = AF_INET;
-    servAddr.sin_port = htons(9090);
-    inet_pton(AF_INET, "127.0.0.1", &servAddr.sin_addr);
+    servAddr.sin_port = htons(8080);
+    inet_pton(AF_INET, serverIP, &servAddr.sin_addr);
     if (connect(sock, (sockaddr*)&servAddr, sizeof(servAddr)) == SOCKET_ERROR)
     {
         cerr << "connect() failed. WSA error " << WSAGetLastError() << "\n";
